@@ -1,0 +1,266 @@
+<style>
+   .banners {
+    white-space: nowrap!important;
+    overflow: hidden!important;
+    padding: 5px 0;
+    background: {{ section.settings.background1 }};
+    position: relative!important;
+  } 
+
+   .banners-slide {
+    display: inline-block!important;
+    /* Removemos a animação inicial do CSS */
+  }
+
+  .banners-slide.animate {
+    animation: {{ section.settings.animation_speed | default: 50 }}s slide infinite linear;
+  }
+  
+  .banners-slide img {
+    max-width: -webkit-fill-available!important;
+    height: auto!important;
+    border-style: none!important;
+    vertical-align: top!important;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box!important;
+  }
+
+  @keyframes slide {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  @media (min-width: 767px) {
+    .banners:before,
+    .banners:after {
+      position: absolute!important;
+      top: 0;
+      width: 250px!important;
+      height: 100%!important;
+      content: "";
+      z-index: 2;
+    }
+  }
+
+  .banners:hover .banners-slide {
+    animation-play-state: paused;
+  }
+
+  .banners-slide img {
+    height: 50px!important;
+    margin: 0 -8px 0 0!important;
+  }
+
+  @media (min-width: 767px) {
+    .banners.desktop {
+      display: block;
+    }
+
+    .banners.mobile {
+      display: none;
+    }
+  }
+
+  @media (max-width: 766px) {
+    .banners.desktop {
+      display: none;
+    }
+
+    .banners.mobile {
+      display: block!important;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Banner animado",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_bannerscroll",
+      "label": "Mostrar banner",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "image_link",
+      "label": "URL Banner",
+      "default": "/collections/all"
+    },
+    {
+      "type": "color",
+      "id": "background1",
+      "label": "Cor do fundo",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Banner Desktop"
+    },
+    {
+      "type": "image_picker",
+      "label": "Banner 1 Desktop",
+      "id": "desktop_banner1",
+      "info": "Tamanho recomendado 1920x150px."
+    },
+    {
+      "type": "image_picker",
+      "label": "Banner 2 Desktop",
+      "id": "desktop_banner2",
+      "info": "Tamanho recomendado 1920x150px."
+    },
+    {
+      "type": "header",
+      "content": "Banner Mobile"
+    },
+    {
+      "type": "image_picker",
+      "label": "Banner 1 Mobile",
+      "id": "mobile_banner1",
+      "info": "Tamanho recomendado 1920x150px."
+    },
+    {
+      "type": "image_picker",
+      "label": "Banner 2 Mobile",
+      "id": "mobile_banner2",
+      "info": "Tamanho recomendado 1920x150px."
+    },
+    {
+      "type": "range",
+      "id": "animation_speed",
+      "label": "Velocidade da Animação — Menor = mais rápido",
+      "default": 50,
+      "min": 5,
+      "max": 100,
+      "step": 5
+    }
+  ],
+  "presets": [
+    {
+      "name": "Banner animado",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
+
+{%- if section.settings.show_bannerscroll -%}
+
+  {% comment %} Bloco para desktop {% endcomment %}
+  <div class="banners desktop" role="region" {{ block.shopify_attributes }}>
+    {%- if section.settings.image_link != blank -%}
+      <a href="{{ section.settings.image_link }}" class="">
+    {%- endif -%}
+    <div class="banners-slide desktop-slide">
+      <img src="{{ section.settings.desktop_banner1 | img_url: "master" }}" />
+      <img src="{{ section.settings.desktop_banner2 | img_url: "master" }}" />
+      <img src="{{ section.settings.desktop_banner1 | img_url: "master" }}" />
+      <img src="{{ section.settings.desktop_banner2 | img_url: "master" }}" />
+      <img src="{{ section.settings.desktop_banner1 | img_url: "master" }}" />
+      <img src="{{ section.settings.desktop_banner2 | img_url: "master" }}" />
+    </div>
+    {%- if section.settings.image_link != blank -%}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {% comment %} Bloco para dispositivos móveis {% endcomment %}
+  <div class="banners mobile" role="region" {{ block.shopify_attributes }}>
+    {%- if section.settings.image_link != blank -%}
+      <a href="{{ section.settings.image_link }}" class="">
+    {%- endif -%}
+    <div class="banners-slide mobile-slide">
+      <img src="{{ section.settings.mobile_banner1 | img_url: "master" }}" />
+      <img src="{{ section.settings.mobile_banner2 | img_url: "master" }}" />
+      <img src="{{ section.settings.mobile_banner1 | img_url: "master" }}" />
+      <img src="{{ section.settings.mobile_banner2 | img_url: "master" }}" />
+      <img src="{{ section.settings.mobile_banner1 | img_url: "master" }}" />
+      <img src="{{ section.settings.mobile_banner2 | img_url: "master" }}" />
+    </div>
+    {%- if section.settings.image_link != blank -%}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <script>
+    function initializeBannerSlides() {
+      var desktopSlide = document.querySelector(".desktop-slide");
+      var mobileSlide = document.querySelector(".mobile-slide");
+      var desktopContainer = document.querySelector(".banners.desktop");
+      var mobileContainer = document.querySelector(".banners.mobile");
+      
+      function waitForImagesAndStart(container, slideElement) {
+        if (!container || !slideElement) return;
+        
+        var images = slideElement.querySelectorAll('img');
+        var loadedImages = 0;
+        var totalImages = images.length;
+        
+        function checkAllImagesLoaded() {
+          loadedImages++;
+          if (loadedImages >= totalImages) {
+            // Clone o elemento se necessário
+            if (container.children.length === 1) {
+              var copy = slideElement.cloneNode(true);
+              container.appendChild(copy);
+            }
+            
+            // Inicia a animação após um pequeno delay
+            setTimeout(function() {
+              var slides = container.querySelectorAll('.banners-slide');
+              slides.forEach(function(slide) {
+                slide.classList.add('animate');
+              });
+            }, 100);
+          }
+        }
+        
+        if (totalImages === 0) {
+          checkAllImagesLoaded();
+          return;
+        }
+        
+        images.forEach(function(img) {
+          if (img.complete) {
+            checkAllImagesLoaded();
+          } else {
+            img.addEventListener('load', checkAllImagesLoaded);
+            img.addEventListener('error', checkAllImagesLoaded);
+          }
+        });
+      }
+      
+      // Processa desktop e mobile
+      waitForImagesAndStart(desktopContainer, desktopSlide);
+      waitForImagesAndStart(mobileContainer, mobileSlide);
+    }
+
+    // Múltiplos pontos de execução para garantir funcionamento
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(initializeBannerSlides, 100);
+      });
+    } else {
+      setTimeout(initializeBannerSlides, 100);
+    }
+
+    window.addEventListener('load', function() {
+      setTimeout(initializeBannerSlides, 200);
+    });
+
+    // Para temas com AJAX
+    document.addEventListener('shopify:section:load', function() {
+      setTimeout(initializeBannerSlides, 100);
+    });
+  </script>
+
+{% endif -%}

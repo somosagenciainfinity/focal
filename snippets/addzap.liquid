@@ -1,0 +1,84 @@
+{%- if settings.addzap and settings.numberzap != blank -%}
+<style>
+  .sticky-button {
+    position: fixed;
+    background: none;
+    background-size: contain;
+    background-repeat: no-repeat;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 50px;
+    box-shadow: 0 0px 12px 0 rgb(0 0 0 / 10%);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    -webkit-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .sticky-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0px 20px 0 rgb(0 0 0 / 20%);
+  }
+
+  .sticky-button img {
+    margin: auto;
+    width: 55px;
+    height: 55px;
+  }
+
+  @media (max-width: 768px) {
+    .sticky-button {
+      bottom: 30px!important;
+    }
+  }
+</style>
+
+{%- comment -%}
+Limpeza rigorosa do número para remover qualquer caractere inválido
+incluindo caracteres invisíveis, espaços especiais e símbolos
+{%- endcomment -%}
+
+{%- assign whatsapp_number = settings.numberzap | strip | remove: ' ' | remove: '-' | remove: '(' | remove: ')' | remove: '+' | remove: '.' | remove: '_' | remove: '‬' | remove: '‭' | remove: '&nbsp;' -%}
+
+{%- comment -%}
+Remove caracteres de controle Unicode comuns
+{%- endcomment -%}
+{%- assign whatsapp_number = whatsapp_number | replace: '​', '' | replace: '‌', '' | replace: '‍', '' -%}
+
+{%- comment -%}
+Garante que só restam números
+{%- endcomment -%}
+{%- assign clean_number = '' -%}
+{%- assign valid_digits = '0123456789' -%}
+{%- for i in (0..whatsapp_number.size) -%}
+  {%- assign char = whatsapp_number | slice: i, 1 -%}
+  {%- if valid_digits contains char -%}
+    {%- assign clean_number = clean_number | append: char -%}
+  {%- endif -%}
+{%- endfor -%}
+
+{%- assign whatsapp_message = settings.messagezap | default: '' | url_encode -%}
+
+{%- comment -%}
+Validação básica: número deve ter entre 8 e 15 dígitos (padrão internacional)
+{%- endcomment -%}
+{%- if clean_number.size >= 8 and clean_number.size <= 15 -%}
+<a href="https://wa.me/{{ clean_number }}{% if whatsapp_message != blank %}?text={{ whatsapp_message }}{% endif %}" 
+   target="_blank" 
+   class="sticky-button" 
+   id="sticky-button"
+   title="Chat on WhatsApp">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+       alt="WhatsApp" 
+       width="55" 
+       height="55" 
+       loading="lazy">
+</a>
+{%- endif -%}
+{%- endif -%}
