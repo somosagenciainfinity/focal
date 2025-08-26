@@ -1,0 +1,37 @@
+/*
+Theme Name: Focal WordPress
+Description: Conversão do tema Shopify Focal para WordPress/WooCommerce. Um tema moderno e elegante para e-commerce com foco na experiência do usuário e design responsivo.
+Version: 1.0.0
+Author: Convertido do tema Shopify Focal
+Text Domain: focal-wp
+Domain Path: /languages
+Requires at least: 5.0
+Tested up to: 6.4
+Requires PHP: 7.4
+Tags: e-commerce, woocommerce, responsive, modern, shop, store, business
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Este tema foi convertido do tema Shopify Focal para funcionar com WordPress e WooCommerce.
+Inclui todas as funcionalidades principais do tema original adaptadas para o WordPress.
+*/
+
+/* Reset básico e importação do CSS principal do tema */
+@import url('assets/css/theme.css');
+
+/* Variáveis CSS customizadas para WordPress */
+:root {
+  --wp-admin-bar-height: 32px;
+}
+
+/* Ajustes específicos para WordPress */
+body.admin-bar {
+  padding-top: var(--wp-admin-bar-height);
+}
+
+/* Ajustes para WooCommerce */
+.woocommerce-page .entry-content {
+  width: 100%;
+}
+
+/* Estilos base do tema serão carregados via functions.php */
